@@ -1,19 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Product, ProductCardProps } from "@/types/interfaces";
 
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-  category: string;
-}
-
-interface ProductCardProps {
-  readonly product: Product;
-}
-
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product }: Readonly<ProductCardProps>) {
   return (
     <Link href={`/produto/${product.id}`}>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col">

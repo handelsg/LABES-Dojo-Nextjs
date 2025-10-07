@@ -1,32 +1,32 @@
+/**
+ * @file src/app/page.tsx
+ * @description Página inicial com listagem de produtos
+ * 
+ * Server Component que usa o ProductService para buscar dados.
+ * Renderizado no servidor, com cache automático do Next.js.
+ */
+
 import Link from "next/link";
 import ProductCard from "./components/ProductCard";
+import { ProductService } from "@/services/product.service";
 
-// Interface para tipar os produtos
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-  category: string;
-  description: string;
-}
+/**
+ * Metadata da página (SEO)
+ */
+export const metadata = {
+  title: "Fake Store - Catálogo de Produtos",
+  description: "Explore nossa coleção de produtos incríveis com os melhores preços",
+};
 
-// Função para buscar produtos da API
-async function getProducts(): Promise<Product[]> {
-  const res = await fetch("https://fakestoreapi.com/products", {
-    // Revalida a cada 60 segundos (para demonstrar cache no Next.js)
-    next: { revalidate: 60 }
-  });
-  
-  if (!res.ok) {
-    throw new Error("Falha ao buscar produtos");
-  }
-  
-  return res.json();
-}
-
+/**
+ * Página inicial - Server Component
+ * 
+ * Este componente é renderizado no servidor e busca dados
+ * diretamente do ProductService, aproveitando o cache do Next.js
+ */
 export default async function Home() {
-  const products = await getProducts();
+  // Busca produtos usando o serviço (com cache automático)
+  const products = await ProductService.getAllProducts();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
@@ -46,6 +46,12 @@ export default async function Home() {
                 className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
                 Produtos
+              </Link>
+              <Link
+                href="/interfaces"
+                className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              >
+                📚 Interfaces
               </Link>
               <a
                 href="https://fakestoreapi.com"

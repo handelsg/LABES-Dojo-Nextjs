@@ -1,53 +1,59 @@
+/**
+ * @file src/app/produto/[id]/page.tsx
+ * @description Página de detalhes do produto com rota dinâmica
+ * 
+ * Server Component que usa ProductService e generateStaticParams
+ * para pré-renderizar páginas de produtos no build time (SSG).
+ */
+
 import Link from "next/link";
 import Image from "next/image";
+import { ProductService } from "@/services/product.service";
+import { PageProps } from "@/types/interfaces";
 
-// Interface para tipar o produto
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-  rating: {
-    rate: number;
-    count: number;
-  };
-}
-
-// Função para buscar um produto específico
-async function getProduct(id: string): Promise<Product> {
-  const res = await fetch(`https://fakestoreapi.com/products/${id}`, {
-    next: { revalidate: 60 }
-  });
-
-  if (!res.ok) {
-    throw new Error("Produto não encontrado");
-  }
-
-  return res.json();
-}
-
-// Gera os parâmetros estáticos para as páginas (opcional, mas melhora performance)
+/**
+ * Gera parâmetros estáticos para SSG (Static Site Generation)
+ * 
+ * Esta função é executada no build time e cria páginas estáticas
+ * para todos os produtos, melhorando drasticamente a performance.
+ * 
+ * @returns Array de objetos com { id: string }
+ */
 export async function generateStaticParams() {
-  const res = await fetch("https://fakestoreapi.com/products");
-  const products: Product[] = await res.json();
-
-  return products.map((product) => ({
-    id: product.id.toString(),
-  }));
+  return ProductService.getStaticParams();
 }
 
-interface PageProps {
-  readonly params: {
-    readonly id: string;
+/**
+ * Gera metadata dinâmica para SEO
+ * 
+ * @param props - Props da página com params
+ * @returns Metadata para a página
+ */
+export async function generateMetadata(props: PageProps) {
+  const params = await Promise.resolve(props.params);
+  const product = await ProductService.getProductById(params.id);
+  
+  return {
+    title: `${product.title} - Fake Store`,
+    description: product.description,
+    openGraph: {
+      images: [product.image],
+    },
   };
 }
 
-export default async function ProductPage(props: PageProps) {
+/**
+ * Página de detalhes do produto - Server Component
+ * 
+ * Busca dados do produto usando ProductService e renderiza
+ * informações detalhadas incluindo imagem, preço, descrição e avaliações.
+ */
+export default async function ProductPage(props: Readonly<PageProps>) {
   // Suporte para Next.js 15+ (params pode ser Promise)
   const params = await Promise.resolve(props.params);
-  const product = await getProduct(params.id);
+  
+  // Busca produto usando o serviço (com cache automático)
+  const product = await ProductService.getProductById(params.id);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">

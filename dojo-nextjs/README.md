@@ -4,6 +4,10 @@
 
 Bem-vindo ao **Desafio 2** do Code Dojo! Neste desafio, você irá criar um **catálogo de produtos completo** consumindo a [Fake Store API](https://fakestoreapi.com).
 
+> 🆕 **ATUALIZAÇÃO:** Projeto refatorado com **Server Actions** e **Services** seguindo as melhores práticas do Next.js 15!
+> 
+> 📚 Veja a [Arquitetura Server-Side](./ARQUITETURA-SERVER-SIDE.md) | [Guia Prático](./GUIA-PRATICO.md) | [Diagrama Visual](./DIAGRAMA-VISUAL.md)
+
 ---
 
 ## 🚀 Início Rápido
@@ -32,6 +36,8 @@ http://localhost:3000
 - ✅ Grid responsivo (1-4 colunas)
 - ✅ Cards com imagem, título, categoria e preço
 - ✅ Navegação para detalhes do produto
+- 🆕 **Busca interativa** com Server Actions
+- 🆕 **Filtro por categoria** em tempo real
 
 ### 📄 Página de Detalhes (`/produto/[id]`)
 - ✅ Informações completas do produto
@@ -39,6 +45,43 @@ http://localhost:3000
 - ✅ Descrição detalhada
 - ✅ Sistema de avaliações
 - ✅ Botões de ação (comprar, favoritar)
+- 🆕 **SSG (Static Site Generation)** para performance máxima
+
+---
+
+## 🏗️ Arquitetura (NEW!)
+
+O projeto usa uma **arquitetura em camadas** profissional:
+
+```
+src/
+├── actions/              # 🔄 Server Actions (use server)
+│   └── product.actions.ts
+├── services/             # 🏢 Lógica de negócio
+│   └── product.service.ts
+├── lib/                  # 🔧 Utilitários
+│   └── api-client.ts
+├── types/                # 📦 TypeScript types
+│   └── product.ts
+└── app/                  # 📄 Páginas e componentes
+    ├── page.tsx          # Homepage (Server Component)
+    ├── produto/[id]/
+    │   └── page.tsx      # Detalhes (SSG)
+    └── components/
+        ├── ProductCard.tsx
+        ├── SearchBar.tsx        # 🆕 Busca interativa
+        └── CategoryFilter.tsx   # 🆕 Filtro por categoria
+```
+
+### Principais Conceitos:
+
+1. **Server Components** (padrão) - Renderizam no servidor
+2. **Client Components** ("use client") - Interatividade no navegador
+3. **Server Actions** ("use server") - Funções server-side chamadas do cliente
+4. **Services** - Lógica de negócio encapsulada
+5. **API Client** - HTTP client com retry e error handling
+
+📖 **Leia mais:** [Arquitetura Server-Side Completa](./ARQUITETURA-SERVER-SIDE.md)
 
 ---
 
@@ -46,8 +89,19 @@ http://localhost:3000
 
 ```
 src/app/
+├── actions/                  # 🆕 Server Actions
+│   └── product.actions.ts   # Actions para produtos
+├── services/                 # 🆕 Services (lógica de negócio)
+│   └── product.service.ts   # Serviço de produtos
+├── lib/                      # 🆕 Bibliotecas
+│   └── api-client.ts        # Cliente HTTP configurado
+├── types/                    # 🆕 Tipos TypeScript
+│   └── product.ts           # Interface Product
 ├── components/
-│   └── ProductCard.tsx      # Card de produto reutilizável
+│   ├── ProductCard.tsx      # Card de produto reutilizável
+│   ├── SearchBar.tsx        # 🆕 Busca interativa
+│   └── CategoryFilter.tsx   # 🆕 Filtro por categoria
+├── produto/[id]/
 ├── produto/
 │   └── [id]/
 │       └── page.tsx         # Página de detalhes dinâmica
